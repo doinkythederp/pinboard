@@ -1,0 +1,12 @@
+{
+  "root": true,
+  "extends": ["marine/prettier/node"],
+  "parserOptions": {
+    "project": "./tsconfig.json"
+  },
+  "rules": {
+    "no-unused-expressions": "error",
+    "no-warning-comments": "warn",
+    "@typescript-eslint/comma-dangle": "off"
+  }
+}
