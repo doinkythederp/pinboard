@@ -7,6 +7,9 @@
   "rules": {
     "no-unused-expressions": "error",
     "no-warning-comments": "warn",
-    "@typescript-eslint/comma-dangle": "off"
+    "@typescript-eslint/comma-dangle": "off",
+    "@typescript-eslint/await-thenable": "error",
+    "@typescript-eslint/no-explicit-any": "error",
+    "@typescript-eslint/unbound-method": ["error", { "ignoreStatic": true }]
   }
 }
