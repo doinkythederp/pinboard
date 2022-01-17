@@ -78,5 +78,8 @@ typings/
 # Compiled JS files
 dist/
 
+# Pinboard config file
+pinboard.toml
+
 # Misc
 .DS_Store
