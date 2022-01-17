@@ -2,16 +2,28 @@ import { parse as parseToml } from '@iarna/toml';
 import * as fs from 'fs';
 import { PinboardClientConfig } from './core/PinboardClient.js';
 import { resolve as resolvePath } from 'path';
+import { rootDir } from './util.js';
 import Ajv from 'ajv';
 
-const configLocation = resolvePath(__dirname, '../pinboard.toml');
+const configLocation = resolvePath(rootDir, './pinboard.toml');
 
 const ajv = new Ajv();
 
 const validConfig = ajv.compile<PinboardClientConfig>({
   type: 'object',
   properties: {
-    token: { type: 'string' }
+    token: { type: 'string' },
+    logger: {
+      type: 'object',
+      properties: {
+        noColor: { type: 'boolean' },
+        logFile: { type: 'string' },
+        debug: {
+          type: 'array',
+          items: { type: 'string' }
+        }
+      }
+    }
   },
   required: ['token']
 });
