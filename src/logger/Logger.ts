@@ -28,6 +28,11 @@ function stringify(msg: unknown, colors: boolean) {
       });
 }
 
+function inferColor() {
+  if ('NO_COLOR' in process.env) return process.env.NO_COLOR === '0';
+  return process.stdout.isTTY;
+}
+
 export enum LogLevel {
   DEBUG,
   INFO,
@@ -42,10 +47,7 @@ export default class Logger implements BaseLogger {
   ) {
     this.config = {
       ...config,
-      color:
-        typeof config.color === 'boolean'
-          ? config.color
-          : Boolean(process.env.NO_COLOR),
+      color: typeof config.color === 'boolean' ? config.color : inferColor(),
       debug: (config.debug ?? []).concat(
         ...(process.env.PINBOARD_DEBUG?.split(',') ?? [])
       ),
