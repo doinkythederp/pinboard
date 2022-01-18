@@ -3,13 +3,14 @@ import { rootDir } from '../util';
 import { resolve as resolvePath } from 'path';
 import BaseLogger from './BaseLogger';
 import * as kleur from 'kleur/colors';
-import { inspect } from 'util';
+import { inspect, stripVTControlCharacters } from 'util';
 import LoggerChannel from './LoggerChannel';
+import format from './format';
 
 kleur.$.enabled = true;
 
 function center(str: string, length: number) {
-  const padding = (length - str.length) / 2;
+  const padding = (length - stripVTControlCharacters(str).length) / 2;
   return [
     ' '.repeat(Math.floor(padding)),
     str,
@@ -19,7 +20,9 @@ function center(str: string, length: number) {
 
 function stringify(msg: unknown, colors: boolean) {
   return typeof msg === 'string'
-    ? msg
+    ? colors
+      ? msg
+      : stripVTControlCharacters(msg)
     : inspect(msg, {
         colors
       });
@@ -85,9 +88,11 @@ export default class Logger implements BaseLogger {
 
     // format message
     const formattedMessage = [
-      this.dateFormatter.format(new Date()).concat(':').padEnd(22),
-      center(channel ?? '~', 10),
-      center(LogLevel[level]!, 5),
+      format.gray.italic(
+        this.dateFormatter.format(new Date()).concat(':').padEnd(22)
+      ),
+      center(channel ?? format.gray`~`, 10),
+      center(this.formatLogLevel(level), 5),
       stringifiedMessage
     ]
       .join(' ')
@@ -95,6 +100,25 @@ export default class Logger implements BaseLogger {
 
     if (this.config.stdout) process.stdout.write(formattedMessage);
     this.fileHandleStream?.write(formattedMessage);
+  }
+
+  private formatLogLevel(level: LogLevel) {
+    let levelName = LogLevel[level]!;
+    switch (level) {
+      case LogLevel.DEBUG:
+        levelName = format.gray(levelName);
+        break;
+      case LogLevel.INFO:
+        levelName = format.blue.bgWhite.bold(levelName);
+        break;
+      case LogLevel.WARN:
+        levelName = format.yellow(levelName);
+        break;
+      case LogLevel.ERROR:
+        levelName = format.red.bold(levelName);
+        break;
+    }
+    return levelName;
   }
 
   public debug(msg: unknown) {
@@ -122,14 +146,18 @@ export default class Logger implements BaseLogger {
     this.fileHandle = null;
   }
 
-  public getChannel(name: string) {
+  public getChannel(name: string, formatter?: (input: string) => string) {
     // this.channel won't be defined when being called from the constructor
     // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
     if (this.channel) this.channel.debug(`Creating channel "${name}"`);
 
     return new LoggerChannel((level, msg) => {
       if (level !== LogLevel.DEBUG || this.config.debug.includes(name))
-        this.log(level, msg, name);
+        this.log(
+          level,
+          msg,
+          this.config.color && formatter ? formatter(name) : name
+        );
     });
   }
 }
