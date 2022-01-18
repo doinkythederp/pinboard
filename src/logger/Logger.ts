@@ -20,9 +20,7 @@ function center(str: string, length: number) {
 
 function stringify(msg: unknown, colors: boolean) {
   return typeof msg === 'string'
-    ? colors
-      ? msg
-      : stripVTControlCharacters(msg)
+    ? msg
     : inspect(msg, {
         colors
       });
@@ -94,17 +92,20 @@ export default class Logger implements BaseLogger {
         this.dateFormatter.format(new Date()).concat(':').padEnd(22)
       ),
       center(channel ?? format.gray`~`, 10),
-      center(this.formatLogLevel(level), 5)
+      center(this.formatLogLevel(level), 5),
+      stringifiedMessage
     ]
-      .map((part) =>
-        this.config.color ? part : stripVTControlCharacters(part)
-      )
-      .concat(stringifiedMessage)
       .join(' ')
       .concat('\n');
 
-    if (this.config.stdout) process.stdout.write(formattedMessage);
-    this.fileHandleStream?.write(formattedMessage);
+    if (this.config.stdout)
+      process.stdout.write(
+        this.config.color
+          ? formattedMessage
+          : stripVTControlCharacters(formattedMessage)
+      );
+
+    this.fileHandleStream?.write(stripVTControlCharacters(formattedMessage));
   }
 
   private formatLogLevel(level: LogLevel) {
