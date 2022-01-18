@@ -92,9 +92,12 @@ export default class Logger implements BaseLogger {
         this.dateFormatter.format(new Date()).concat(':').padEnd(22)
       ),
       center(channel ?? format.gray`~`, 10),
-      center(this.formatLogLevel(level), 5),
-      stringifiedMessage
+      center(this.formatLogLevel(level), 5)
     ]
+      .map((part) =>
+        this.config.color ? part : stripVTControlCharacters(part)
+      )
+      .concat(stringifiedMessage)
       .join(' ')
       .concat('\n');
 
