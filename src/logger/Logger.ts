@@ -46,9 +46,12 @@ export default class Logger implements BaseLogger {
     this.config = {
       ...config,
       color: typeof config.color === 'boolean' ? config.color : inferColor(),
-      debug: (config.debug ?? []).concat(
-        ...(process.env.PINBOARD_DEBUG?.split(',') ?? [])
-      ),
+      debug:
+        typeof config.debug === 'boolean'
+          ? config.debug
+          : (config.debug ?? []).concat(
+              ...(process.env.PINBOARD_DEBUG?.split(',') ?? [])
+            ),
       stdout: config.stdout ?? true,
       logFile: config.logFile ?? null
     };
@@ -158,7 +161,11 @@ export default class Logger implements BaseLogger {
     if (this.channel) this.channel.debug(`Creating channel "${name}"`);
 
     return new LoggerChannel((level, msg) => {
-      if (level !== LogLevel.DEBUG || this.config.debug.includes(name))
+      if (
+        level !== LogLevel.DEBUG ||
+        this.config.debug === true ||
+        (Array.isArray(this.config.debug) && this.config.debug.includes(name))
+      )
         this.log(
           level,
           msg,
@@ -170,7 +177,7 @@ export default class Logger implements BaseLogger {
 
 export interface LoggerConfig {
   color?: boolean;
-  debug?: string[];
+  debug?: string[] | boolean;
   stdout?: boolean;
   logFile?: string | null;
 }

@@ -19,7 +19,7 @@ const validConfig = ajv.compile<PinboardClientConfig>({
         noColor: { type: 'boolean' },
         logFile: { type: 'string' },
         debug: {
-          type: 'array',
+          type: ['array', 'boolean'],
           items: { type: 'string' }
         }
       }
