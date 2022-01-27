@@ -4,14 +4,12 @@ import { readdir } from 'fs/promises';
 import PinboardClient from './PinboardClient';
 import { format } from '../logger';
 
-export default class Plugin extends Map {
+export default class Plugin {
   public constructor(
     public readonly client: PinboardClient,
     public readonly id: string,
     public readonly config: PluginConfig
-  ) {
-    super();
-  }
+  ) {}
 
   public commands = new Map<string, unknown>();
 
