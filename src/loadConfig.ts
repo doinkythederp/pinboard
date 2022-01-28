@@ -1,9 +1,9 @@
 import { parse as parseToml } from '@iarna/toml';
-import * as fs from 'fs';
-import { PinboardClientConfig } from './core/PinboardClient.js';
-import { resolve as resolvePath } from 'path';
-import { rootDir } from './util.js';
 import Ajv from 'ajv';
+import * as fs from 'fs';
+import { resolve as resolvePath } from 'path';
+import { PinboardClientConfig } from './core/PinboardClient.js';
+import { rootDir } from './util.js';
 
 const configLocation = resolvePath(rootDir, './pinboard.toml');
 
@@ -13,6 +13,7 @@ const validConfig = ajv.compile<PinboardClientConfig>({
   type: 'object',
   properties: {
     token: { type: 'string' },
+    devServer: { type: 'string' },
     logger: {
       type: 'object',
       properties: {
@@ -24,6 +25,13 @@ const validConfig = ajv.compile<PinboardClientConfig>({
             { type: 'array', items: { type: 'string' } }
           ]
         }
+      }
+    },
+    deploy: {
+      type: 'object',
+      properties: {
+        force: { type: 'boolean' },
+        treatDevAsGlobal: { type: 'boolean' }
       }
     }
   },

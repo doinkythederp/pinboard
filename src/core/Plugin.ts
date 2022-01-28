@@ -3,6 +3,7 @@ import { pluginsDir } from '../util';
 import { readdir } from 'fs/promises';
 import PinboardClient from './PinboardClient';
 import { format } from '../logger';
+import Command from './Command';
 
 export default class Plugin {
   public constructor(
@@ -11,7 +12,7 @@ export default class Plugin {
     public readonly config: PluginConfig
   ) {}
 
-  public commands = new Map<string, unknown>();
+  public commands = new Map<string, Command>();
 
   public async loadCommands() {
     const stats: CommandLoaderStats = {
@@ -29,14 +30,14 @@ export default class Plugin {
       try {
         const command = await import(
           resolvePath(resolvePath(pluginsDir, this.id, commandFile))
-        ).then((mod: { default: unknown }) => mod.default);
+        ).then((mod: { default: Command }) => mod.default);
 
-        this.commands.set(name, command);
+        this.commands.set(command.config.name, command);
 
         stats.loads.push(name);
         channel.debug(
           `Sucessfully loaded command ${format.bold(
-            name
+            command.config.name
           )} for plugin ${format.bold(this.config.name)}`
         );
       } catch (err) {
