@@ -44,6 +44,8 @@ export default class PinboardClient extends Client {
 
   public readonly logger: Logger;
 
+  private loginComplete = false;
+
   public override async login(): Promise<string> {
     await this.logger.openLogFile();
     this.logger.info('Starting pinboard!');
@@ -65,6 +67,8 @@ export default class PinboardClient extends Client {
       super.login(this.config.token),
       handleLogin
     ]);
+
+    this.loginComplete = true;
 
     if (!this.isReady()) throw new Error('unreachable');
     this.user.setStatus('online');
@@ -268,6 +272,7 @@ export default class PinboardClient extends Client {
           .then(({ default: handler }) => {
             stats.loaded++;
             this.on(event, async (...args) => {
+              if (!this.loginComplete) return;
               try {
                 // eslint-disable-next-line @typescript-eslint/no-unsafe-call
                 await handler(...args);
