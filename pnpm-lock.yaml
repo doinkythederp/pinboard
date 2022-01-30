@@ -5,7 +5,6 @@ specifiers:
   '@commitlint/config-angular': ^16.0.0
   '@iarna/toml': ^2.2.5
   '@sentry/node': ^6.17.3
-  '@sentry/tracing': ^6.17.3
   '@types/iarna__toml': ^2.0.2
   '@types/node': ^17.0.8
   '@typescript-eslint/eslint-plugin': ^5.4.0
@@ -26,7 +25,6 @@ specifiers:
 dependencies:
   '@iarna/toml': 2.2.5
   '@sentry/node': 6.17.3
-  '@sentry/tracing': 6.17.3
   ajv: 8.9.0
   discord.js: 13.6.0
   kleur: 4.1.4

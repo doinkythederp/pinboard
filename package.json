@@ -31,7 +31,6 @@
   "dependencies": {
     "@iarna/toml": "^2.2.5",
     "@sentry/node": "^6.17.3",
-    "@sentry/tracing": "^6.17.3",
     "ajv": "^8.9.0",
     "discord.js": "^13.6.0",
     "kleur": "^4.1.4",
