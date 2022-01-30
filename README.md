@@ -39,6 +39,10 @@ force = false
 # instead of only commands restricted to devs
 # OPTIONAL (default: false)
 treatDevAsGlobal = false
+
+# dev-only commands are deployed to this server
+# OPTIONAL
+devServer = "123456789012345678"
 ```
 
 ## Setup & Hosting
@@ -54,7 +58,7 @@ Requirements:
 
 Pinboard has external dependencies (`discord.js`, etc.) that must be installed.
 
-```console
+```shell
 $ pnpm install
 ```
 
@@ -62,7 +66,7 @@ $ pnpm install
 
 Pinboard is written in TypeScript and must be compiled in order to be run.
 
-```console
+```shell
 $ pnpm build
 ```
 
@@ -70,7 +74,7 @@ $ pnpm build
 
 This is the part where stuff actually happens! Put your token in `pinboard.toml` and run the following:
 
-```console
+```shell
 $ pnpm start
 ```
 
