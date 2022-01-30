@@ -10,6 +10,14 @@ The Pinboard config file is stored in `./pinboard.toml`.
 # used to login to discord
 token = "some.bot.token"
 
+# used for error reporting - https://sentry.io/
+# OPTIONAL
+sentryDSN = "https://your.dsn@ingest.sentry.io"
+
+# controls if the bot is in development mode
+# OPTIONAL (default: true)
+development = false
+
 [logger]
 # used to force colors on/off instead of having
 # pinboard detect the environment

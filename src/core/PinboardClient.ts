@@ -1,3 +1,4 @@
+import * as Sentry from '@sentry/node';
 import {
   ApplicationCommand,
   Awaitable,
@@ -266,7 +267,21 @@ export default class PinboardClient extends Client {
         import(resolvePath(eventsDir, eventFile))
           .then(({ default: handler }) => {
             stats.loaded++;
-            this.on(event, handler as (...args: unknown[]) => Awaitable<void>);
+            this.on(event, async (...args) => {
+              try {
+                // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+                await handler(...args);
+              } catch (err) {
+                Sentry.captureException(err, {
+                  tags: { event }
+                });
+                channel.error(
+                  `Handler for event ${format.bold(
+                    event
+                  )} errored:\n${format`${err}`}`
+                );
+              }
+            });
           })
           .catch((err) => {
             channel.error(
@@ -286,6 +301,8 @@ export default class PinboardClient extends Client {
 
 export interface PinboardClientConfig {
   token: string;
+  sentryDSN?: string;
+  development?: boolean;
   logger?: LoggerConfig;
   devServer?: string;
   deploy?: DeployConfig;

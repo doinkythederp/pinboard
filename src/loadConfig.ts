@@ -13,6 +13,8 @@ const validConfig = ajv.compile<PinboardClientConfig>({
   type: 'object',
   properties: {
     token: { type: 'string' },
+    sentryDSN: { type: 'string' },
+    development: { type: 'boolean' },
     devServer: { type: 'string' },
     logger: {
       type: 'object',

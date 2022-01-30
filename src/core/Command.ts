@@ -44,15 +44,12 @@ export default class Command {
     try {
       await this.cb.call(client, interaction);
     } catch (err) {
-      channel.error(
-        format`Error while running command ${format.bold(
-          this.config.name
-        )}:\n${err}`
-      );
       await replyToInteraction(
         interaction,
         'Sorry, there was an issue on our side. Maybe try again?'
       );
+
+      throw err;
     }
   }
 
