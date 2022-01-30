@@ -201,8 +201,8 @@ export default class PinboardClient extends Client {
       }
     }
 
-    if (this.config.devServer) {
-      const devServer = await this.guilds.fetch(this.config.devServer);
+    if (this.config.deploy?.devServer) {
+      const devServer = await this.guilds.fetch(this.config.deploy.devServer);
       const currentDevCommands = await devServer.commands.fetch();
 
       for (const command of commands.values()) {
@@ -234,9 +234,9 @@ export default class PinboardClient extends Client {
         .map((cmd) => cmd.toSlashCommand())
     );
 
-    if (this.config.devServer) {
+    if (this.config.deploy?.devServer) {
       channel.info('Updating dev-only commands...');
-      const devServer = await this.guilds.fetch(this.config.devServer);
+      const devServer = await this.guilds.fetch(this.config.deploy.devServer);
       await devServer.commands.set(
         commands
           .filter(
@@ -304,13 +304,13 @@ export interface PinboardClientConfig {
   sentryDSN?: string;
   development?: boolean;
   logger?: LoggerConfig;
-  devServer?: string;
   deploy?: DeployConfig;
 }
 
 export interface DeployConfig {
   force?: boolean;
   treatDevAsGlobal?: boolean;
+  devServer?: string;
 }
 
 export interface PluginLoaderStats {}

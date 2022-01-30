@@ -15,7 +15,6 @@ const validConfig = ajv.compile<PinboardClientConfig>({
     token: { type: 'string' },
     sentryDSN: { type: 'string' },
     development: { type: 'boolean' },
-    devServer: { type: 'string' },
     logger: {
       type: 'object',
       properties: {
@@ -33,7 +32,8 @@ const validConfig = ajv.compile<PinboardClientConfig>({
       type: 'object',
       properties: {
         force: { type: 'boolean' },
-        treatDevAsGlobal: { type: 'boolean' }
+        treatDevAsGlobal: { type: 'boolean' },
+        devServer: { type: 'string' }
       }
     }
   },
