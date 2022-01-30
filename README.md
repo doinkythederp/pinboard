@@ -43,6 +43,16 @@ treatDevAsGlobal = false
 # dev-only commands are deployed to this server
 # OPTIONAL
 devServer = "123456789012345678"
+
+[database]
+# used to connect to MongoDB database
+# OPTIONAL (default: "mongodb://127.0.0.1:27017/pinboard")
+uri = "mongodb://host:port/database"
+
+# authentication for the database
+# OPTIONAL
+username = "pinboard"
+password = "securepassword123"
 ```
 
 ## Setup & Hosting

@@ -2,6 +2,7 @@ import * as Sentry from '@sentry/node';
 import { homedir } from 'os';
 import PinboardClient from './core/PinboardClient';
 import loadConfig from './loadConfig';
+import './models';
 import { rootDir } from './util';
 
 (async () => {

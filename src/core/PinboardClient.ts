@@ -8,6 +8,7 @@ import {
   GuildResolvable
 } from 'discord.js';
 import { readdir } from 'fs/promises';
+import * as mongoose from 'mongoose';
 import { homedir } from 'os';
 import { parse as parsePath, resolve as resolvePath } from 'path';
 import Logger, { format, LoggerConfig } from '../logger';
@@ -40,6 +41,10 @@ export default class PinboardClient extends Client {
     this.on('debug', (msg) => discordjsChannel.debug(msg))
       .on('warn', (msg) => discordjsChannel.warn(msg))
       .on('error', (msg) => discordjsChannel.error(msg));
+
+    const mongooseChannel = this.logger.getChannel('mongoose', format.red);
+
+    mongoose.connection.on('error', (error) => mongooseChannel.error(error));
   }
 
   public readonly logger: Logger;
@@ -61,10 +66,18 @@ export default class PinboardClient extends Client {
       });
     });
 
+    await this.loadEvents();
+
     await Promise.all([
       this.loadPlugins(),
-      this.loadEvents(),
       super.login(this.config.token),
+      mongoose.connect(
+        this.config.database?.uri ?? 'mongodb://127.0.0.1:27017/pinboard',
+        {
+          user: this.config.database?.username,
+          pass: this.config.database?.password
+        }
+      ),
       handleLogin
     ]);
 
@@ -72,6 +85,7 @@ export default class PinboardClient extends Client {
 
     if (!this.isReady()) throw new Error('unreachable');
     this.user.setStatus('online');
+    this.emit('loginComplete');
 
     return this.config.token;
   }
@@ -274,8 +288,11 @@ export default class PinboardClient extends Client {
             this.on(event, async (...args) => {
               if (!this.loginComplete) return;
               try {
-                // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-                await handler(...args);
+                await (handler as (...args: unknown[]) => Awaitable<void>).call(
+                  this,
+                  // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+                  ...args
+                );
               } catch (err) {
                 Sentry.captureException(err, {
                   tags: { event }
@@ -310,12 +327,19 @@ export interface PinboardClientConfig {
   development?: boolean;
   logger?: LoggerConfig;
   deploy?: DeployConfig;
+  database?: DatabaseConfig;
 }
 
 export interface DeployConfig {
   force?: boolean;
   treatDevAsGlobal?: boolean;
   devServer?: string;
+}
+
+export interface DatabaseConfig {
+  uri?: string;
+  username?: string;
+  password?: string;
 }
 
 export interface PluginLoaderStats {}
